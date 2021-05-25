@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="../tools/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/list.css">
+  <link rel="stylesheet" href="../css/pagination.css">
+  <style>
+    .breadcrumb{
+      padding-left: 6px;
+      padding-right: 6px;
+    }
+    .m-style{
+      width:700px;
+      height:50px;
+      margin:10px auto;
+    }
+    .m-style a{
+      border:1px solid #999;
+      color:#222;
+    }
+  </style>
+</head>
+<body>
+  <h1>我是一个列表页面</h1>
+
+  <div class="pagi"></div>
+  <div id="pagination" class="m-style">
+     
+    </div>
+  <div class="container">
+     
+    <ul>
+     
+    </ul>
+  </div>
+  <script src="../js/jquery.min.js"></script>
+  <script src="../js/jquery.pagination.js"></script>
+  <script src="../js/promise.js"></script>
+  <script src="../js/tools.js"></script>
+  <script>
+      let page = 1;
+      let line = 8;
+      var urlObj = myGetUrlVal();
+      setPage(page,line,urlObj.cat_one_id);
+      function setPage(page,line,cat_one_id){
+        pAjax('../server/goods_list.php','get',{cat_one_id:cat_one_id,page:page,line:line},'json')
+        .then(function(res){
+          if(res.data.length>0){
+                 let str ='';
+                 let ulStr = '';
+                 res.data.forEach(function(item,key){
+                      let str = ` <li class="list-item">
+                                <div class="panel panel-primary">
+                                  <div class="panel-body">
+                                    <ol class="breadcrumb">
+                                      <li><a href="#">${item.cat_one_id}</a></li>
+                                      <li><a href="#">${item.cat_two_id}</a></li>
+                                      <li class="active">${item.cat_three_id}</li>
+                                    </ol>
+                                  </div>
+                                  <div class="panel-footer">
+                                    <div class="row">
+                                      <div class="detail_box">
+                                        <div class="thumbnail">
+                                          <img src="${item.goods_big_logo}" alt="...">
+                                          <div class="caption">
+                                            <h3>${item.goods_name}</h3>
+                                            <p>
+                                              <i class="glyphicon glyphicon-yen"></i>
+                                              <span>${item.goods_price}</span>
+                                            </p>
+                                            <p>
+                                              <a href="javascript:;" class="btn btn-primary" role="button">查找相似商品</a>
+                                               <a href="./detail.html?goods_id=${item.goods_id}" class="btn btn-danger" role="button">查看商品详情</a>
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </li>`
+                              ulStr += str;
+                 });
+                 $('ul').html(ulStr);
+                 $('#pagination').pagination({
+                      pageCount:res.sumPage,
+                      totalData:res.row-0,
+                      showData:line,
+                      coping:true,
+                      count:4,
+                      current:page,
+                      mode:'fixed',
+                      isHide:true,
+                    //  jump:true,
+                      homePage:'首页',
+                      endPage:'末页',
+                      prevContent:'<上一页',
+                      nextContent:'下一页>',
+                      callback:function(val){
+                        setPage(val.getCurrent(),line,cat_one_id);
+                      }
+
+                  });
+               }
+           
+        })
+      //   $.ajax({
+      //      url:'../server/goods_list.php',
+      //      type:'get',
+      //      data:{cat_one_id:cat_one_id,page:page,line:line},
+      //      dataType:'json',
+      //      success:res=>{
+      //        console.log(res);
+               
+               
+      //      }
+      // });
+        
+    }
+      
+      
+  </script>
+</body>
+</html>

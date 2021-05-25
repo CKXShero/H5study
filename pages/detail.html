@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="../tools/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/detail.css">
+</head>
+<body>
+<h1>我是一个商品详情页面</h1>
+
+<div class="container">
+ 
+</div>
+<script src="../js/jquery.min.js"></script>
+<script src="../js/tools.js"></script>
+<script src="../js/promise.js"></script>
+<script>
+  let goodsId = myGetUrlVal().goods_id;
+  let obj = {};
+  pAjax('../server/goods_detail.php','post',{goods_id:goodsId},'json')
+  .then(function(res){
+    let str = ` <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h3 class="panel-title">商品详细信息</h3>
+                    </div>
+                    <div class="panel-body">
+                      <div class="media">
+                        <div class="media-left">
+                          <a href="#">
+                            <img class="media-object" src="${res.goods_big_logo}" alt="...">
+                          </a>
+                        </div>
+                        <div class="media-body">
+                          <h4 class="media-heading">${res.goods_name}</h4>
+                          <p>
+                            <i class="glyphicon glyphicon-yen"></i>
+                            <span>${res.goods_price}</span>
+                          </p>
+                          <div class="btn-group" role="group" aria-label="...">
+                            <button type="button" class="btn btn-default">XL</button>
+                            <button type="button" class="btn btn-default">L</button>
+                            <button type="button" class="btn btn-default">M</button>
+                            <button type="button" class="btn btn-default">S</button>
+                            <button type="button" class="btn btn-default">XS</button>
+                          </div>
+                          <p>
+                            <a href="javascript:;" class="btn btn-warning btn-lg" role="button">立即购买</a>
+                            <a href="javascript:;" name="addCart" class="btn btn-danger btn-lg" role="button">加入购物车</a>
+                          </p>
+                        </div>
+                      </div>
+                      <ul class="nav nav-tabs">
+                        <li role="presentation" class="active"><a href="#">商品详细信息</a></li>
+                        <li role="presentation"><a href="#">商品参数信息</a></li>
+                        <li role="presentation"><a href="#">相关商品</a></li>
+                      </ul>
+                      <div>
+                          <img src="${res.goods_introduce}" alt="">
+                      </div>
+                    </div>
+                  </div>`;
+      $('.container').html(str);
+      obj = res;
+  });
+  // $.ajax({
+  //   url:'../server/goods_detail.php',
+  //   type:'post',
+  //   data:{goods_id:goodsId},
+  //   dataType:'json',
+  //   success:res=>{
+      
+  //   }
+  // });
+  $('.container').click(function(e){
+    if(e.target.getAttribute('name')=== 'addCart'){
+      let val = localStorage.getItem('cart');
+      //没有购物车
+      if(val === null){
+        let arr = [];
+        //新增 默认为购买状态  购买数量为1
+        obj.buy = true;
+        obj.num = 1;
+        arr.unshift(obj);
+        localStorage.setItem('cart',JSON.stringify(arr));
+      }else{
+        //有购物车  判断当前要加入购物车的商品在购物车中是否已经存在
+        val = JSON.parse(val);
+        let bool = val.some(function(value,key){
+           return value.goods_id === obj.goods_id;
+        });
+        if(bool){
+           for(let i=0;i<=val.length-1;i++){
+             if(val[i].goods_id === obj.goods_id){
+              val[i].num += 1;
+              break;
+             }
+           }
+           localStorage.setItem('cart',JSON.stringify(val));
+        }else{
+          obj.buy = true;
+          obj.num = 1;
+          val.unshift(obj);
+          localStorage.setItem('cart',JSON.stringify(val));
+        }
+      }
+      window.location.href='../pages/cart.html';
+    }
+  })
+</script>
+</body>
+</html>

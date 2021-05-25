@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="referrer" content="no-referrer">
+  <title>Document</title>
+  <link rel="stylesheet" href="../tools/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/index.css">
+</head>
+<body>
+  <div class="jumbotron">
+    <h1>我是一个首页
+      <a href="./res.html" class="btn btn-danger btn-lg" role="button" id="register">注册</a>
+      <a href="./login.html" class="btn btn-danger btn-lg" role="button" id="login">登录</a>
+      <button class="btn btn-danger btn-lg" role="button" id="logout">退出登录</button>
+      <button class="btn btn-danger btn-lg" role="button" id="cart">购物车</button>
+    </h1>
+    <p>应该根据后台数据,生成页面,有瀑布流,有轮播图,我就懒得写了</p>
+    <p><a class="btn btn-primary btn-lg" href="./list.html?cat_one_id=食品酒水" role="button">食品酒水</a></p>
+    <p><a class="btn btn-primary btn-lg" href="./list.html?cat_one_id=童装玩具" role="button">童装玩具</a></p>
+    <p><a class="btn btn-primary btn-lg" href="./list.html?cat_one_id=家装建材" role="button">家装建材</a></p>
+    <p><a class="btn btn-primary btn-lg" href="./list.html?cat_one_id=奶粉尿裤" role="button">奶粉尿裤</a></p>
+    <p><a class="btn btn-primary btn-lg" href="./list.html?cat_one_id=其他" role="button">其他产品</a></p>
+  </div>
+  <script src="../js/jquery.min.js"></script>
+  <script src="../js/cookie.js"></script>
+  <script>
+      //根据cookie信息来展示右侧导航内容
+      const loginCookie = myGetCookie();
+      if(loginCookie.loginName !== undefined){
+          $('#register').css('display','none');
+          $('#login').css('display','none');
+          $('#logout').click(function(){
+            mySetCookie('loginName','',-1,'/');
+            $('#register').css('display','inline-block');
+            $('#login').css('display','inline-block');
+            $('#logout').css('display','none');
+          })
+      }else{
+        $('#register').css('display','inline-block');
+        $('#login').css('display','inline-block');
+        $('#logout').css('display','none');
+      }
+      $('#cart').click(function(){
+          if(loginCookie.loginName !== undefined){
+              window.location.href="../pages/cart.html";
+          }else{
+              if(window.confirm('您还没登录，请先登录')){
+                  window.location.href='../pages/login.html';
+              }
+          }
+      })
+     
+  </script>
+  
+</body>
+</html>

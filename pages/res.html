@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="../tools/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/login.css">
+  <style>
+      .inputWidth{
+        width: 200px;
+        display: inline-block;
+      }
+
+      .spanspan{
+        color:red;
+        font-size: 20px;
+      }
+      .cover{
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,.5);
+      }
+  </style>
+</head>
+<body>
+
+    <div class="jumbotron">
+      <h1>欢迎注册 NZ2002 SHOP</h1>
+      <div class="login">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="username" class="col-sm-2 control-label">用户名</label>
+            <div class="col-sm-10">
+              <input type="text" name="username" class="form-control inputWidth "  placeholder="用户名">
+              <span name="nameSpan" class="namespan"></span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="password" class="col-sm-2 control-label">密码</label>
+            <div class="col-sm-10">
+              <input type="password" class="form-control inputWidth pwd"  placeholder="密码">
+              <span class="spanspan"></span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password" class="col-sm-2 control-label">确认密码</label>
+            <div class="col-sm-10">
+              <input type="password" class="form-control inputWidth confirmPwd"  placeholder="确认密码">
+              <span class="confirmspan"></span>
+              
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password" class="col-sm-2 control-label confirmSc">验证码</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control inputWidth" id="confirmSc" placeholder="验证码"> <a id="sc"></a><br>
+              <span class="confirmScspan"></span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button class="btn btn-default" id="register">注册</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/tools.js"></script>
+    <script src="../js/promise.js"></script>
+    
+    <script>
+       
+         //生成验证码  
+         $('#sc').html(setVc());
+         $('#sc').click(function(){$(this).html(setVc())});
+         // 对注册的用户名进行校验
+         $('[name="username"]').blur(function(){
+           $.ajax({
+             url:'../server/goods_select.php',
+             type:'post',
+             data:{userName:$(this).val()},
+             dataType:'json',
+             success:res=>{
+               $('.namespan').html(res.msg);
+             }
+           })
+         });
+        
+         $('#register').click(function(){
+           
+           //确认密码
+           if($('.confirmPwd').val() !== $('.pwd').val()){
+                $('.confirmspan').html("密码不一致");
+                return;
+           }else{
+                $('.confirmspan').html("");
+           }
+          //验证码校验
+          if($('#confirmSc').val() !== $('#sc').text()){
+                $('.confirmScspan').html("验证码错误");
+                return;
+           }else{
+                $('.confirmScspan').html("");
+           }
+           pAjax('../server/goods_res.php','post',{userName:$('[name="username"]').val(),userPwd:$('.pwd').val()},'json')
+           .then(function(res){
+              $('#sc').html(setVc());
+               if(res.result===1){
+                 window.alert("注册成功，点击确定跳转到登录页面");
+                 window.location.href="../pages/login.html"
+               }else if(res.result === 0){
+                 window.alert("注册失败，该账号已被注册");
+               }
+           })
+          //  $.ajax({
+          //    url:'../server/goods_res.php',
+          //    type:'post',
+          //    data:{userName:$('[name="username"]').val(),userPwd:$('.pwd').val()},
+          //    dataType:'json',
+          //    success:res=>{
+          //      //验证码刷新
+             
+          //    }
+          //  });
+           
+         })
+
+
+    </script>
+
+
+</body>
+</html>
